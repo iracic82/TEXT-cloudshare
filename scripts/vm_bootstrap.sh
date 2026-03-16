@@ -172,12 +172,13 @@ echo ""
 SCRIPT
 chmod +x /usr/local/bin/lab-info
 
-# Show on login for sysadmin
-echo '/usr/local/bin/lab-info' >> /home/sysadmin/.bashrc
+# Show on every console/SSH login via MOTD
+cp /usr/local/bin/lab-info /etc/update-motd.d/99-lab-info
+chmod +x /etc/update-motd.d/99-lab-info
 
-# Show on login for student (if exists)
-if id student &>/dev/null; then
-    echo '/usr/local/bin/lab-info' >> /home/student/.bashrc
-fi
+# Disable default Ubuntu MOTD noise
+chmod -x /etc/update-motd.d/10-help-text 2>/dev/null || true
+chmod -x /etc/update-motd.d/50-motd-news 2>/dev/null || true
+chmod -x /etc/update-motd.d/91-contract-ua-esm-status 2>/dev/null || true
 
 echo "=== Lab setup completed at $(date) ==="
