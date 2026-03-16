@@ -48,27 +48,44 @@ Infoblox_Token="${Infoblox_Token:-}"
 INFOBLOX_EMAIL="${INFOBLOX_EMAIL:-}"
 INFOBLOX_PASSWORD="${INFOBLOX_PASSWORD:-}"
 
-# Use short machine-id as unique participant identifier
-# Each CloudShare VM clone gets a unique machine-id
-MACHINE_ID=$(cat /etc/machine-id)
-SHORT_ID="${MACHINE_ID:0:8}"
-PARTICIPANT_ID="${PARTICIPANT_ID:-cloudshare-${SHORT_ID}}"
+# ── Auto-discover from CloudShare API ───────────────────────────────
+# Discovers: student email, environment ID, VM ID
+# Uses VM ID as unique participant identifier (machine-id is same on clones)
+if [ -n "${CLOUDSHARE_API_ID:-}" ] && [ -n "${CLOUDSHARE_API_KEY:-}" ]; then
+    echo "Discovering environment from CloudShare..."
+    DISCOVER_OUTPUT=$(cd "$SCRIPTS_DIR" && python3 discover_owner.py 2>/tmp/discover_debug.log)
+    DISCOVER_EXIT=$?
+    cat /tmp/discover_debug.log
 
-echo "Participant ID: $PARTICIPANT_ID"
+    if [ $DISCOVER_EXIT -eq 0 ] && [ -n "$DISCOVER_OUTPUT" ]; then
+        DISCOVERED_EMAIL=$(echo "$DISCOVER_OUTPUT" | awk '{print $1}')
+        DISCOVERED_ENV_ID=$(echo "$DISCOVER_OUTPUT" | awk '{print $2}')
+        DISCOVERED_VM_ID=$(echo "$DISCOVER_OUTPUT" | awk '{print $3}')
 
-# ── Auto-discover student email from CloudShare ─────────────────────
-# If USER_EMAIL is not set and CloudShare API creds are available,
-# look up the ownerEmail for this VM's environment
-if [ -z "${USER_EMAIL:-}" ] && [ -n "${CLOUDSHARE_API_ID:-}" ] && [ -n "${CLOUDSHARE_API_KEY:-}" ]; then
-    echo "Discovering student email from CloudShare..."
-    DISCOVERED_EMAIL=$(cd "$SCRIPTS_DIR" && python3 discover_owner.py 2>&1 | tail -1)
-    if [ -n "$DISCOVERED_EMAIL" ] && echo "$DISCOVERED_EMAIL" | grep -q "@"; then
-        USER_EMAIL="$DISCOVERED_EMAIL"
-        echo "Discovered student email: $USER_EMAIL"
+        if echo "$DISCOVERED_EMAIL" | grep -q "@"; then
+            USER_EMAIL="$DISCOVERED_EMAIL"
+            echo "Discovered student email: $USER_EMAIL"
+        fi
+
+        # Use VM ID for unique participant ID (each clone gets a different VM ID)
+        if [ -n "$DISCOVERED_VM_ID" ]; then
+            SHORT_VM_ID=$(echo "$DISCOVERED_VM_ID" | cut -c1-12)
+            PARTICIPANT_ID="cloudshare-${SHORT_VM_ID}"
+            echo "Using VM-based participant ID: $PARTICIPANT_ID"
+        fi
     else
-        echo "Warning: could not discover student email"
+        echo "Warning: CloudShare discovery failed"
     fi
 fi
+
+# Fallback if discovery didn't set participant ID
+if [ -z "${PARTICIPANT_ID:-}" ]; then
+    MACHINE_ID=$(cat /etc/machine-id)
+    SHORT_ID="${MACHINE_ID:0:8}"
+    PARTICIPANT_ID="cloudshare-${SHORT_ID}"
+fi
+
+echo "Participant ID: $PARTICIPANT_ID"
 
 # ── Step 1: Create Infoblox Sandbox ─────────────────────────────────
 echo "--- Step 1: Creating Infoblox Sandbox ---"
