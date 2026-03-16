@@ -94,7 +94,7 @@ fi
 echo "--- Step 3: Custom lab setup ---"
 
 # Example: Write lab info to a file the student can see
-cat > /home/ubuntu/lab-info.txt <<INFO
+cat > /root/lab-info.txt <<INFO
 ====================================
   Infoblox Lab Environment
 ====================================
