@@ -73,8 +73,6 @@ def main():
 
     # Config
     base_url = os.environ.get("INFOBLOX_BASE_URL", "https://csp.infoblox.com")
-    if not base_url.endswith("/v2"):
-        base_url = base_url.rstrip("/") + "/v2"
     token = os.environ.get("Infoblox_Token")
     email = os.environ.get("INFOBLOX_EMAIL")
 

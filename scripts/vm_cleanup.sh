@@ -33,7 +33,7 @@ fi
 # ── Step 2: Delete Sandbox ─────────────────────────────────────────
 if [ -f "$STATE_DIR/sandbox_id.txt" ]; then
     echo "--- Step 2: Deleting sandbox ---"
-    INFOBLOX_BASE_URL="$INFOBLOX_BASE_URL/v2" \
+    INFOBLOX_BASE_URL="$INFOBLOX_BASE_URL" \
         python3 delete_sandbox.py \
             --sandbox-id-file "$STATE_DIR/sandbox_id.txt" || echo "Warning: sandbox deletion failed"
 else

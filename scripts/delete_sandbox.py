@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--sandbox-id-file", default="sandbox_id.txt")
     args = parser.parse_args()
 
-    base_url = os.environ.get("INFOBLOX_BASE_URL", "https://csp.infoblox.com/v2")
+    base_url = os.environ.get("INFOBLOX_BASE_URL", "https://csp.infoblox.com")
     token = os.environ.get("Infoblox_Token")
 
     if not token:

@@ -22,6 +22,9 @@ class SandboxAccountAPI:
 
     def __init__(self, base_url: str, token: str):
         self.base_url = base_url.rstrip("/")
+        # Ensure /v2 is in the path (sandbox API requires it)
+        if not self.base_url.endswith("/v2"):
+            self.base_url = self.base_url + "/v2"
         self.token = token
 
     def _headers(self):

@@ -123,7 +123,7 @@ def main():
     args = parser.parse_args()
 
     # Infoblox config
-    infoblox_base_url = os.environ.get("INFOBLOX_BASE_URL", "https://csp.infoblox.com/v2")
+    infoblox_base_url = os.environ.get("INFOBLOX_BASE_URL", "https://csp.infoblox.com")
     infoblox_token = os.environ.get("Infoblox_Token")
     infoblox_email = os.environ.get("INFOBLOX_EMAIL")
 
