@@ -105,8 +105,35 @@ if [ -n "$EXISTING_SANDBOX" ]; then
     echo "Sandbox already exists: $EXISTING_SANDBOX (from previous boot/reset)"
     echo "Restoring state files..."
     echo "$EXISTING_SANDBOX" > "$STATE_DIR/sandbox_id.txt"
+
+    # Still create the MOTD/lab-info (state files get wiped on revert)
+    SANDBOX_ID="$EXISTING_SANDBOX"
+    cat > /usr/local/bin/lab-info << 'LABEOF'
+#!/bin/bash
+echo ""
+echo "  ╔══════════════════════════════════════════════════╗"
+echo "  ║         Infoblox Lab Environment                 ║"
+echo "  ╠══════════════════════════════════════════════════╣"
+LABEOF
+    echo "  echo \"  ║  Sandbox ID:  $SANDBOX_ID\"" >> /usr/local/bin/lab-info
+    echo "  echo \"  ║  Student:     ${USER_EMAIL:-N/A}\"" >> /usr/local/bin/lab-info
+    echo "  echo \"  ║  Portal:      https://portal.infoblox.com/\"" >> /usr/local/bin/lab-info
+    cat >> /usr/local/bin/lab-info << 'LABEOF'
+echo "  ╠══════════════════════════════════════════════════╣"
+echo "  ║  To find your sandbox in Infoblox Portal:        ║"
+echo "  ║  Top-left menu → Find Account → paste Sandbox ID ║"
+echo "  ╚══════════════════════════════════════════════════╝"
+echo ""
+LABEOF
+    chmod +x /usr/local/bin/lab-info
+    cp /usr/local/bin/lab-info /etc/update-motd.d/99-lab-info
+    chmod +x /etc/update-motd.d/99-lab-info
+    chmod -x /etc/update-motd.d/10-help-text 2>/dev/null || true
+    chmod -x /etc/update-motd.d/50-motd-news 2>/dev/null || true
+    chmod -x /etc/update-motd.d/91-contract-ua-esm-status 2>/dev/null || true
+
     rm -f "$LOCK_FILE"
-    echo "=== Lab already provisioned, skipping setup ==="
+    echo "=== Lab already provisioned, MOTD updated ==="
     exit 0
 fi
 
