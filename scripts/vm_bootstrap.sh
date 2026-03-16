@@ -25,7 +25,12 @@ LOCK_FILE="/tmp/lab-setup.lock"
 exec > >(tee -a "$LOG_FILE") 2>&1
 echo "=== Lab setup started at $(date) ==="
 
-# Prevent double execution
+# Prevent double execution - skip if already set up
+if [ -f "$STATE_DIR/sandbox_id.txt" ]; then
+    echo "Lab already set up (sandbox_id.txt exists). Skipping."
+    echo "To force re-run: sudo rm -f $STATE_DIR/*.txt $LOCK_FILE"
+    exit 0
+fi
 if [ -f "$LOCK_FILE" ]; then
     echo "Setup already running or completed. Remove $LOCK_FILE to re-run."
     exit 0
