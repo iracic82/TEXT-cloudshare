@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.log
+*.env
+sandbox_id.txt
+external_id.txt
+user_id.txt
+.idea/
+.venv/
