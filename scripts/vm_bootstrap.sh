@@ -147,19 +147,37 @@ else
     echo "--- Step 2: Skipped (USER_EMAIL or INFOBLOX_PASSWORD not set) ---"
 fi
 
-# ── Step 3: Custom setup (add your lab-specific commands here) ──────
+# ── Step 3: Write lab info visible to student ──────────────────────
 echo "--- Step 3: Custom lab setup ---"
 
-# Example: Write lab info to a file the student can see
-cat > /root/lab-info.txt <<INFO
-====================================
-  Infoblox Lab Environment
-====================================
-Participant ID:  $PARTICIPANT_ID
-Sandbox ID:      $(cat $STATE_DIR/sandbox_id.txt 2>/dev/null || echo 'N/A')
-External ID:     $(cat $STATE_DIR/external_id.txt 2>/dev/null || echo 'N/A')
-Setup completed: $(date)
-====================================
-INFO
+SANDBOX_ID=$(cat $STATE_DIR/sandbox_id.txt 2>/dev/null || echo 'N/A')
+
+# Create lab-info command accessible to everyone
+cat > /usr/local/bin/lab-info << 'SCRIPT'
+#!/bin/bash
+echo ""
+echo "  ╔══════════════════════════════════════════════════╗"
+echo "  ║         Infoblox Lab Environment                 ║"
+echo "  ╠══════════════════════════════════════════════════╣"
+SCRIPT
+echo "  echo \"  ║  Sandbox ID:  $SANDBOX_ID\"" >> /usr/local/bin/lab-info
+echo "  echo \"  ║  Student:     ${USER_EMAIL:-N/A}\"" >> /usr/local/bin/lab-info
+echo "  echo \"  ║  Portal:      https://portal.infoblox.com/\"" >> /usr/local/bin/lab-info
+cat >> /usr/local/bin/lab-info << 'SCRIPT'
+echo "  ╠══════════════════════════════════════════════════╣"
+echo "  ║  To find your sandbox in Infoblox Portal:        ║"
+echo "  ║  Top-left menu → Find Account → paste Sandbox ID ║"
+echo "  ╚══════════════════════════════════════════════════╝"
+echo ""
+SCRIPT
+chmod +x /usr/local/bin/lab-info
+
+# Show on login for sysadmin
+echo '/usr/local/bin/lab-info' >> /home/sysadmin/.bashrc
+
+# Show on login for student (if exists)
+if id student &>/dev/null; then
+    echo '/usr/local/bin/lab-info' >> /home/student/.bashrc
+fi
 
 echo "=== Lab setup completed at $(date) ==="
