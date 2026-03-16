@@ -47,7 +47,6 @@ INFOBLOX_BASE_URL="${INFOBLOX_BASE_URL:-https://csp.infoblox.com}"
 Infoblox_Token="${Infoblox_Token:-}"
 INFOBLOX_EMAIL="${INFOBLOX_EMAIL:-}"
 INFOBLOX_PASSWORD="${INFOBLOX_PASSWORD:-}"
-USER_EMAIL="${USER_EMAIL:-}"
 
 # Use short machine-id as unique participant identifier
 # Each CloudShare VM clone gets a unique machine-id
@@ -56,6 +55,20 @@ SHORT_ID="${MACHINE_ID:0:8}"
 PARTICIPANT_ID="${PARTICIPANT_ID:-cloudshare-${SHORT_ID}}"
 
 echo "Participant ID: $PARTICIPANT_ID"
+
+# ── Auto-discover student email from CloudShare ─────────────────────
+# If USER_EMAIL is not set and CloudShare API creds are available,
+# look up the ownerEmail for this VM's environment
+if [ -z "${USER_EMAIL:-}" ] && [ -n "${CLOUDSHARE_API_ID:-}" ] && [ -n "${CLOUDSHARE_API_KEY:-}" ]; then
+    echo "Discovering student email from CloudShare..."
+    DISCOVERED_EMAIL=$(cd "$SCRIPTS_DIR" && python3 discover_owner.py 2>&1 | tail -1)
+    if [ -n "$DISCOVERED_EMAIL" ] && echo "$DISCOVERED_EMAIL" | grep -q "@"; then
+        USER_EMAIL="$DISCOVERED_EMAIL"
+        echo "Discovered student email: $USER_EMAIL"
+    else
+        echo "Warning: could not discover student email"
+    fi
+fi
 
 # ── Step 1: Create Infoblox Sandbox ─────────────────────────────────
 echo "--- Step 1: Creating Infoblox Sandbox ---"

@@ -137,11 +137,15 @@ def main():
     email = args.infoblox_email or os.environ.get("INFOBLOX_EMAIL", "admin@infoblox.com")
     password = args.infoblox_password or os.environ.get("INFOBLOX_PASSWORD", "YOUR_PASSWORD_HERE")
 
+    cs_api_id = os.environ.get("CLOUDSHARE_API_ID", "")
+    cs_api_key = os.environ.get("CLOUDSHARE_API_KEY", "")
+
     env_content = (
         f"Infoblox_Token={token}\\n"
         f"INFOBLOX_EMAIL={email}\\n"
         f"INFOBLOX_PASSWORD={password}\\n"
-        f"USER_EMAIL=\\n"
+        f"CLOUDSHARE_API_ID={cs_api_id}\\n"
+        f"CLOUDSHARE_API_KEY={cs_api_key}\\n"
     )
     ok = run_step(cs, vm_id,
         "Step 5/5: Writing credentials to lab.env",
