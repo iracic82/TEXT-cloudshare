@@ -1,0 +1,124 @@
+version: "3"
+containers:
+- name: shell
+  image: gcr.io/instruqt/cloud-client
+  shell: /bin/bash
+  ports:
+  - 80
+  memory: 2048
+virtualbrowsers:
+- name: aws
+  url: https://signin.aws.amazon.com/console
+- name: azure
+  url: https://azure.microsoft.com/en-us/get-started/azure-portal
+- name: infoblox
+  url: https://portal.infoblox.com/
+- name: gcp
+  url: https://console.cloud.google.com
+- name: lab
+  url: https://infoblox-igor.s3.eu-west-1.amazonaws.com/Infoblox+PoC+-+Diagram+(2)+(1).png
+- name: aws-discovery
+  url: https://github.com/infobloxopen/AWS_Instruqt_Discovery
+gcp_projects:
+- name: infoblox-demo
+  services:
+  - compute.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - iam.googleapis.com
+  - serviceusage.googleapis.com
+  regions:
+  - europe-north1
+  roles: []
+aws_accounts:
+- name: infoblox-demo
+  services:
+  - ec2
+  - s3
+  - cloudformation
+  - ebs
+  - iam
+  - servicecatalog
+  - ssm
+  - amplifyuibuilder
+  - apigateway
+  - cloudfront
+  - autoscaling
+  - cloudtrail
+  - cloudwatch
+  - cloudtrail-data
+  - internetmonitor
+  - lambda
+  - route53
+  - route53resolver
+  - logs
+  - sns
+  - oam
+  - networkmonitor
+  - sts
+  - access-analyzer
+  - amplify
+  - applicationinsights
+  regions:
+  - eu-west-2
+  - af-south-1
+  - ap-east-1
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-northeast-3
+  - ap-south-1
+  - ap-south-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-southeast-3
+  - ap-southeast-4
+  - ap-southeast-5
+  - ap-southeast-7
+  - ca-central-1
+  - ca-west-1
+  - eu-central-1
+  - eu-central-2
+  - eu-north-1
+  - eu-south-1
+  - eu-south-2
+  - eu-west-1
+  - eu-west-3
+  - il-central-1
+  - me-central-1
+  - me-south-1
+  - mx-central-1
+  - sa-east-1
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  managed_policies:
+  - arn:aws:iam::aws:policy/AdministratorAccess
+azure_subscriptions:
+- name: infoblox-tenant
+  services:
+  - Microsoft.CustomProviders
+  - Microsoft.GuestConfiguration
+  - Microsoft.ManagedIdentity
+  - Microsoft.Management
+  - Microsoft.Network
+  - Microsoft.Portal
+  - Microsoft.Resources
+  - Microsoft.Storage
+  - microsoft.insights
+  - Microsoft.Web
+  - microsoft.support
+  - Microsoft.Advisor
+  - Microsoft.Authorization
+  - Microsoft.Automation
+  - Microsoft.Billing
+  - Microsoft.ClassicSubscription
+  - Microsoft.Compute
+  - Microsoft.ContainerInstance
+  regions:
+  - northeurope
+  roles:
+  - Owner
+secrets:
+- name: TF_VAR_windows_admin_password
+- name: INFOBLOX_PASSWORD
+- name: INFOBLOX_EMAIL
+- name: Infoblox_Token

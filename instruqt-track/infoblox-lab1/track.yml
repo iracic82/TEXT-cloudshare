@@ -1,0 +1,37 @@
+slug: infoblox-lab1
+id: ywozzymyekgv
+title: Infoblox - Universal DNS management Multi-Cloud
+teaser: Universal DNS Management for Consolidated Visibility & Streamlined Operations
+description: "In this lab, you’ll walk through how Infoblox Universal DDI (UDDI) delivers
+  a centralized control plane for DNS management across multi-cloud environments—specifically
+  AWS and Azure.\n\nYou’ll simulate a real-world enterprise scenario where:\n\n- Multiple
+  VPCs and VNets span across AWS (eu-west-2) and Azure (northerneurope)\n- DNS zones
+  and records are managed in the Infoblox UDDI Portal\n- Changes made in UDDI (e.g.,
+  new A/CNAME records, updates) are synchronized bi-directionally to AWS Route 53
+  Private Hosted Zones and Azure Private DNS Zones\n- Cross-cloud services and applications
+  resolve consistently across platforms\n- You gain consolidated visibility, auditing,
+  and change tracking across all platforms via Infoblox\n\n\t\U0001F3AF Key Learning
+  Objectives:\n\n- Understand how Infoblox UDDI acts as a DNS Single Source of Truth\n-
+  Learn how DNS records are synced between UDDI, AWS Route 53, and Azure DNS\n- See
+  DNS records propagate in real time across clouds\n- Validate name resolution across
+  multi-cloud app stacks\n- Experience operational simplicity with a unified DNS control
+  plane"
+icon: ./assets/Infoblox-logo-for-email.png
+tags: []
+owner: infoblox
+developers:
+- iracic@infoblox.com
+show_timer: true
+idle_timeout: 0
+timelimit: 14400
+lab_config:
+  sidebar_enabled: true
+  feedback_recap_enabled: true
+  feedback_tab_enabled: false
+  loadingMessages: true
+  theme:
+    name: modern-dark
+  override_challenge_layout: false
+  hideStopButton: false
+checksum: "7133261528345332231"
+enhanced_loading: false

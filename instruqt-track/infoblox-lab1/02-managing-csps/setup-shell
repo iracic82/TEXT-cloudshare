@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# This script runs when the platform setup the challenge.
+#
+# The platform determines if the script was successful using the exit code of this
+# script. If the exit code is not 0, the script fails. 
+#
+
+echo "This is the setup script"
+sleep 120
+
+
+# Run Python scripts
+#cd /root/infoblox-lab/Infoblox-PoC/scripts
+#python3 deploy_infoblox_role.py
+#sleep 10
+#python3 register_aws_cloud_provider.py
+#sleep 10
+#python3 create_azure_credentials.py
+#sleep 10
+#python3 get_azure_cloud_credentials.py
+#sleep 10
+#python3 register_azure_cloud_provider.py
+#sleep 10
+###
+
+
+set-workdir /root/infoblox-lab
+
+exit 0

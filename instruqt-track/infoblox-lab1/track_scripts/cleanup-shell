@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euxo pipefail
+cd /root/infoblox-lab/Infoblox-PoC/scripts
+sleep 10
+
+python3 purge_discovery_jobs.py || echo "⚠️ purge_discovery_jobs.py failed, continuing anyway"
+sleep 10
+Infoblox_Token=${Infoblox_Token}
+python3 delete_sandbox.py || echo "⚠️ delete_sandbox.py failed, continuing anyway"
+sleep 10
+
+# Handle delete_user.py failure gracefully
+if [[ -f user_id.txt ]]; then
+  python3 delete_user.py
+else
+  echo "⚠️ Skipping delete_user.py because user_id.txt not found"
+fi
+
+sleep 10

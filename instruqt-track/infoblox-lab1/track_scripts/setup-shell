@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Install Terraform & Requests library
+apt update -y
+apt install git -y
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+apt update -y
+apt install terraform -y
+pip3 install requests
+
+# Pull Lab assets (terraform & scripts) from github
+mkdir /root/infoblox-lab/
+git clone https://github.com/iracic82/Infoblox-PoC.git
+cp -r /root/Infoblox-PoC /root/infoblox-lab/
+#rm -r /root/ProsimoLabs
+
+
+
+# Set runtime variables
+
+ agent variable set AWS_ID ${INSTRUQT_AWS_ACCOUNT_INFOBLOX_DEMO_ACCOUNT_ID}
+ agent variable set User_Email ${INSTRUQT_USER_EMAIL}
+ agent variable set AWS_USER ${INSTRUQT_AWS_ACCOUNT_INFOBLOX_DEMO_USERNAME}
+ agent variable set AWS_PASS ${INSTRUQT_AWS_ACCOUNT_INFOBLOX_DEMO_PASSWORD}
+ agent variable set Sandbox_ID ${INSTRUQT_PARTICIPANT_ID}
+
+
+ agent variable set AZURE_SUBSCRIPTION_NAME ${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_SUBSCRIPTION_NAME}
+ agent variable set AZURE_SUBSCRIPTION_ID ${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_SUBSCRIPTION_ID}
+ agent variable set AZURE_SUBSCRIPTION_USERNAME ${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_USERNAME}
+ agent variable set AZURE_SUBSCRIPTION_PASSWORD ${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_PASSWORD}
+
+
+# Set env variables AWS and Azure
+
+echo "export TF_VAR_Access_Key_AWS=${INSTRUQT_AWS_ACCOUNT_INFOBLOX_DEMO_AWS_ACCESS_KEY_ID} " >> /root/.bashrc
+echo "export TF_VAR_Access_Secret_AWS=${INSTRUQT_AWS_ACCOUNT_INFOBLOX_DEMO_AWS_SECRET_ACCESS_KEY} " >> /root/.bashrc
+echo "export INPUT_ENV_VAR_NAME=${INSTRUQT_USER_EMAIL}" >> /root/.bashrc
+echo "export TF_VAR_subscription=${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_SUBSCRIPTION_ID} " >> /root/.bashrc
+echo "export TF_VAR_client=${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_SPN_ID} " >> /root/.bashrc
+echo "export TF_VAR_clientsecret=${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_SPN_PASSWORD} " >> /root/.bashrc
+echo "export TF_VAR_tenantazure=${INSTRUQT_AZURE_SUBSCRIPTION_INFOBLOX_TENANT_TENANT_ID} " >> /root/.bashrc
+#echo "export Infoblox_Token=${Infoblox_Token} " >> /root/.bashrc
+echo "export INSTRUQT_EMAIL=${INSTRUQT_USER_EMAIL} " >> /root/.bashrc
+
+# GCP project and credentials
+echo "export TF_VAR_projectid=${INSTRUQT_GCP_PROJECT_INFOBLOX_DEMO_PROJECT_ID}" >> /root/.bashrc
+echo "export GOOGLE_APPLICATION_CREDENTIALS=\"/root/infoblox-lab/sa-key.json\"" >> /root/.bashrc
+
+# Decode and write the service account key
+echo "$INSTRUQT_GCP_PROJECT_INFOBLOX_DEMO_SERVICE_ACCOUNT_KEY" | base64 -d > /root/infoblox-lab/sa-key.json
+
+
+
+source /root/.bashrc
+
+
+# Run Python scripts
+cd /root/infoblox-lab/Infoblox-PoC/scripts
+Infoblox_Token=${Infoblox_Token}
+python3 create_sandbox.py
+sleep 180
+python3 create_user.py
+sleep 10
+
+# Run terraform to prepare CSPs env and spin up Infoblox resources
+
+cd /root/infoblox-lab/Infoblox-PoC/terraform
+terraform init 
+sleep 10
+terraform apply --auto-approve  -target=module.aws__instances_eu -target=aws_ec2_transit_gateway.eu
+sleep 10
+terraform apply --auto-approve  -target=aws_ec2_transit_gateway_route_table.tgw_rt -target=aws_ec2_transit_gateway_vpc_attachment.tgw_attachments -target=aws_ec2_transit_gateway_route_table_association.tgw_rt_associations -target=aws_route.tgw_routes -target=aws_ec2_transit_gateway_route.tgw_routes
+sleep 10
+terraform apply --auto-approve -target=module.azure_instances_eu
+sleep 10
+terraform apply --auto-approve -target=azurerm_virtual_network_peering.vnet_peering
+sleep 120
+
+# Set AWS creds
+cp ~/.aws/credentials /root/infoblox-lab/Infoblox-PoC/terraform
