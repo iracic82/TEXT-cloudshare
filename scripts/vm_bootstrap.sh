@@ -111,18 +111,18 @@ if [ -n "$EXISTING_SANDBOX" ]; then
     cat > /usr/local/bin/lab-info << 'LABEOF'
 #!/bin/bash
 echo ""
-echo "  ╔══════════════════════════════════════════════════╗"
-echo "  ║         Infoblox Lab Environment                 ║"
-echo "  ╠══════════════════════════════════════════════════╣"
+echo "  ╔══════════════════════════════════════════════════════╗"
+echo "  ║           Infoblox Lab Environment                   ║"
+echo "  ╠══════════════════════════════════════════════════════╣"
 LABEOF
-    echo "  echo \"  ║  Sandbox ID:  $SANDBOX_ID\"" >> /usr/local/bin/lab-info
-    echo "  echo \"  ║  Student:     ${USER_EMAIL:-N/A}\"" >> /usr/local/bin/lab-info
-    echo "  echo \"  ║  Portal:      https://portal.infoblox.com/\"" >> /usr/local/bin/lab-info
+    echo "  echo \"  ║  Sandbox Name: $PARTICIPANT_ID\"" >> /usr/local/bin/lab-info
+    echo "  echo \"  ║  Student:      ${USER_EMAIL:-N/A}\"" >> /usr/local/bin/lab-info
+    echo "  echo \"  ║  Portal:       https://portal.infoblox.com/\"" >> /usr/local/bin/lab-info
     cat >> /usr/local/bin/lab-info << 'LABEOF'
-echo "  ╠══════════════════════════════════════════════════╣"
-echo "  ║  To find your sandbox in Infoblox Portal:        ║"
-echo "  ║  Top-left menu → Find Account → paste Sandbox ID ║"
-echo "  ╚══════════════════════════════════════════════════╝"
+echo "  ╠══════════════════════════════════════════════════════╣"
+echo "  ║  To find your sandbox in Infoblox Portal:             ║"
+echo "  ║  Top-left menu → Find Account → paste Sandbox Name   ║"
+echo "  ╚══════════════════════════════════════════════════════╝"
 echo ""
 LABEOF
     chmod +x /usr/local/bin/lab-info
@@ -183,18 +183,18 @@ SANDBOX_ID=$(cat $STATE_DIR/sandbox_id.txt 2>/dev/null || echo 'N/A')
 cat > /usr/local/bin/lab-info << 'SCRIPT'
 #!/bin/bash
 echo ""
-echo "  ╔══════════════════════════════════════════════════╗"
-echo "  ║         Infoblox Lab Environment                 ║"
-echo "  ╠══════════════════════════════════════════════════╣"
+echo "  ╔══════════════════════════════════════════════════════╗"
+echo "  ║           Infoblox Lab Environment                   ║"
+echo "  ╠══════════════════════════════════════════════════════╣"
 SCRIPT
-echo "  echo \"  ║  Sandbox ID:  $SANDBOX_ID\"" >> /usr/local/bin/lab-info
-echo "  echo \"  ║  Student:     ${USER_EMAIL:-N/A}\"" >> /usr/local/bin/lab-info
-echo "  echo \"  ║  Portal:      https://portal.infoblox.com/\"" >> /usr/local/bin/lab-info
+echo "  echo \"  ║  Sandbox Name: $PARTICIPANT_ID\"" >> /usr/local/bin/lab-info
+echo "  echo \"  ║  Student:      ${USER_EMAIL:-N/A}\"" >> /usr/local/bin/lab-info
+echo "  echo \"  ║  Portal:       https://portal.infoblox.com/\"" >> /usr/local/bin/lab-info
 cat >> /usr/local/bin/lab-info << 'SCRIPT'
-echo "  ╠══════════════════════════════════════════════════╣"
-echo "  ║  To find your sandbox in Infoblox Portal:        ║"
-echo "  ║  Top-left menu → Find Account → paste Sandbox ID ║"
-echo "  ╚══════════════════════════════════════════════════╝"
+echo "  ╠══════════════════════════════════════════════════════╣"
+echo "  ║  To find your sandbox in Infoblox Portal:             ║"
+echo "  ║  Top-left menu → Find Account → paste Sandbox Name   ║"
+echo "  ╚══════════════════════════════════════════════════════╝"
 echo ""
 SCRIPT
 chmod +x /usr/local/bin/lab-info
