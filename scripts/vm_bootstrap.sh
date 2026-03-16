@@ -25,14 +25,9 @@ LOCK_FILE="/tmp/lab-setup.lock"
 exec > >(tee -a "$LOG_FILE") 2>&1
 echo "=== Lab setup started at $(date) ==="
 
-# Prevent double execution - skip if already set up
-if [ -f "$STATE_DIR/sandbox_id.txt" ]; then
-    echo "Lab already set up (sandbox_id.txt exists). Skipping."
-    echo "To force re-run: sudo rm -f $STATE_DIR/*.txt $LOCK_FILE"
-    exit 0
-fi
+# Prevent concurrent execution
 if [ -f "$LOCK_FILE" ]; then
-    echo "Setup already running or completed. Remove $LOCK_FILE to re-run."
+    echo "Setup already running. Remove $LOCK_FILE to re-run."
     exit 0
 fi
 touch "$LOCK_FILE"
@@ -92,9 +87,31 @@ fi
 
 echo "Participant ID: $PARTICIPANT_ID"
 
+# ── Check if sandbox already exists (handles VM reset/revert) ───────
+echo "Checking if sandbox already exists for $PARTICIPANT_ID..."
+cd "$SCRIPTS_DIR"
+EXISTING_SANDBOX=$(python3 -c "
+from sandbox_api import SandboxAccountAPI
+import os
+api = SandboxAccountAPI(base_url=os.environ.get('INFOBLOX_BASE_URL', 'https://csp.infoblox.com'), token='$Infoblox_Token')
+sid = api.get_sandbox_account_id_by_name('$PARTICIPANT_ID')
+if sid:
+    if sid.startswith('identity/accounts/'):
+        sid = sid.split('/')[-1]
+    print(sid)
+" 2>/dev/null)
+
+if [ -n "$EXISTING_SANDBOX" ]; then
+    echo "Sandbox already exists: $EXISTING_SANDBOX (from previous boot/reset)"
+    echo "Restoring state files..."
+    echo "$EXISTING_SANDBOX" > "$STATE_DIR/sandbox_id.txt"
+    rm -f "$LOCK_FILE"
+    echo "=== Lab already provisioned, skipping setup ==="
+    exit 0
+fi
+
 # ── Step 1: Create Infoblox Sandbox ─────────────────────────────────
 echo "--- Step 1: Creating Infoblox Sandbox ---"
-cd "$SCRIPTS_DIR"
 
 PARTICIPANT_ID="$PARTICIPANT_ID" \
 Infoblox_Token="$Infoblox_Token" \
