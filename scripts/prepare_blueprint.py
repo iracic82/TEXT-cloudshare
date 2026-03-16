@@ -132,7 +132,20 @@ def main():
     if not ok:
         sys.exit(1)
 
-    # Step 5: Write credentials to lab.env
+    # Step 5: Lock down secrets - remove sysadmin from sudo, protect lab files
+    ok = run_step(cs, vm_id,
+        "Step 5/6: Locking down student access to secrets",
+        (
+            "sudo chmod 700 /opt/cloudshare-lab && "
+            "sudo chown -R root:root /opt/cloudshare-lab && "
+            "sudo deluser sysadmin sudo 2>/dev/null; "
+            "sudo bash -c 'echo \"sysadmin ALL=(ALL) NOPASSWD: /usr/bin/apt, /usr/bin/apt-get\" > /etc/sudoers.d/sysadmin-limited' && "
+            "sudo chmod 440 /etc/sudoers.d/sysadmin-limited"
+        ))
+    if not ok:
+        print("Warning: could not lock down access, continuing...")
+
+    # Step 6: Write credentials to lab.env
     token = args.infoblox_token or os.environ.get("Infoblox_Token", "YOUR_TOKEN_HERE")
     email = args.infoblox_email or os.environ.get("INFOBLOX_EMAIL", "admin@infoblox.com")
     password = args.infoblox_password or os.environ.get("INFOBLOX_PASSWORD", "YOUR_PASSWORD_HERE")
@@ -148,7 +161,7 @@ def main():
         f"CLOUDSHARE_API_KEY={cs_api_key}\\n"
     )
     ok = run_step(cs, vm_id,
-        "Step 5/5: Writing credentials to lab.env",
+        "Step 6/6: Writing credentials to lab.env",
         f'sudo bash -c \'printf "{env_content}" > /opt/cloudshare-lab/lab.env\' && sudo chmod 600 /opt/cloudshare-lab/lab.env')
     if not ok:
         sys.exit(1)
