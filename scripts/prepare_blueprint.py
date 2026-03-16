@@ -132,18 +132,17 @@ def main():
     if not ok:
         sys.exit(1)
 
-    # Step 5: Lock down secrets - remove sysadmin from sudo, protect lab files
+    # Step 5: Create student user with no sudo, protect lab files
     ok = run_step(cs, vm_id,
-        "Step 5/6: Locking down student access to secrets",
+        "Step 5/6: Creating student user and locking down secrets",
         (
+            "sudo useradd -m -s /bin/bash student 2>/dev/null; "
+            "echo 'student:Infoblox123!' | sudo chpasswd && "
             "sudo chmod 700 /opt/cloudshare-lab && "
-            "sudo chown -R root:root /opt/cloudshare-lab && "
-            "sudo deluser sysadmin sudo 2>/dev/null; "
-            "sudo bash -c 'echo \"sysadmin ALL=(ALL) NOPASSWD: /usr/bin/apt, /usr/bin/apt-get\" > /etc/sudoers.d/sysadmin-limited' && "
-            "sudo chmod 440 /etc/sudoers.d/sysadmin-limited"
+            "sudo chown -R root:root /opt/cloudshare-lab"
         ))
     if not ok:
-        print("Warning: could not lock down access, continuing...")
+        print("Warning: could not create student user, continuing...")
 
     # Step 6: Write credentials to lab.env
     token = args.infoblox_token or os.environ.get("Infoblox_Token", "YOUR_TOKEN_HERE")
