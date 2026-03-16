@@ -82,7 +82,7 @@ def main():
     # Step 1: Install system dependencies
     ok = run_step(cs, vm_id,
         "Step 1/5: Installing system packages",
-        "apt-get update -qq && apt-get install -y -qq python3 python3-pip git",
+        "sudo apt-get update -qq && sudo apt-get install -y -qq python3 python3-pip git",
         timeout=180)
     if not ok:
         sys.exit(1)
@@ -90,7 +90,7 @@ def main():
     # Step 2: Clone the repo
     ok = run_step(cs, vm_id,
         "Step 2/5: Cloning lab scripts from Git",
-        f"rm -rf /opt/cloudshare-lab && git clone -b {args.branch} {args.repo} /opt/cloudshare-lab",
+        f"sudo rm -rf /opt/cloudshare-lab && sudo git clone -b {args.branch} {args.repo} /opt/cloudshare-lab",
         timeout=120)
     if not ok:
         sys.exit(1)
@@ -98,7 +98,7 @@ def main():
     # Step 3: Install Python dependencies
     ok = run_step(cs, vm_id,
         "Step 3/5: Installing Python dependencies",
-        "pip3 install requests cloudshare",
+        "sudo pip3 install requests cloudshare",
         timeout=120)
     if not ok:
         sys.exit(1)
@@ -122,12 +122,12 @@ def main():
     ok = run_step(cs, vm_id,
         "Step 4/5: Setting up systemd service for auto-run on boot",
         (
-            f'mkdir -p /opt/cloudshare-lab/state && '
-            f'chmod +x /opt/cloudshare-lab/scripts/vm_bootstrap.sh && '
-            f'chmod +x /opt/cloudshare-lab/scripts/vm_cleanup.sh && '
-            f'printf "{systemd_unit}" > /etc/systemd/system/infoblox-lab-setup.service && '
-            f'systemctl daemon-reload && '
-            f'systemctl enable infoblox-lab-setup.service'
+            f'sudo mkdir -p /opt/cloudshare-lab/state && '
+            f'sudo chmod +x /opt/cloudshare-lab/scripts/vm_bootstrap.sh && '
+            f'sudo chmod +x /opt/cloudshare-lab/scripts/vm_cleanup.sh && '
+            f'sudo bash -c \'printf "{systemd_unit}" > /etc/systemd/system/infoblox-lab-setup.service\' && '
+            f'sudo systemctl daemon-reload && '
+            f'sudo systemctl enable infoblox-lab-setup.service'
         ))
     if not ok:
         sys.exit(1)
@@ -145,7 +145,7 @@ def main():
     )
     ok = run_step(cs, vm_id,
         "Step 5/5: Writing credentials to lab.env",
-        f'printf "{env_content}" > /opt/cloudshare-lab/lab.env && chmod 600 /opt/cloudshare-lab/lab.env')
+        f'sudo bash -c \'printf "{env_content}" > /opt/cloudshare-lab/lab.env\' && sudo chmod 600 /opt/cloudshare-lab/lab.env')
     if not ok:
         sys.exit(1)
 

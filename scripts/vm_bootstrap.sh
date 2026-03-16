@@ -34,10 +34,15 @@ touch "$LOCK_FILE"
 
 mkdir -p "$STATE_DIR"
 
-# ── Configuration ───────────────────────────────────────────────────
-# These can be set as environment variables, or hardcoded for the template.
-# CloudShare custom data / environment variables take precedence.
+# ── Load credentials from lab.env ───────────────────────────────────
+# Works whether or not lines start with "export"
+if [ -f /opt/cloudshare-lab/lab.env ]; then
+    set -a
+    source /opt/cloudshare-lab/lab.env
+    set +a
+fi
 
+# ── Configuration ───────────────────────────────────────────────────
 INFOBLOX_BASE_URL="${INFOBLOX_BASE_URL:-https://csp.infoblox.com}"
 Infoblox_Token="${Infoblox_Token:-}"
 INFOBLOX_EMAIL="${INFOBLOX_EMAIL:-}"
