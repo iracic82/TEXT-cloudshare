@@ -74,10 +74,11 @@ class SandboxAccountAPI:
         endpoint = f"{self.base_url}/sandbox/accounts/{sandbox_id}"
         try:
             response = requests.delete(endpoint, headers=self._headers())
-            if response.status_code == 204:
+            if response.status_code in (200, 204):
                 logger.info(f"Sandbox ID {sandbox_id} deleted successfully.")
                 return True
-            logger.error(f"Failed to delete sandbox. Status: {response.status_code}")
+            logger.error(f"Failed to delete sandbox. Status: {response.status_code}, Body: {response.text}")
+            print(f"Delete failed. Status: {response.status_code}, Body: {response.text}", flush=True)
             return False
         except Exception as e:
             logger.error(f"Error deleting sandbox: {e}")

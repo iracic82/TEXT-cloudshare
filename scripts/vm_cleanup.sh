@@ -26,6 +26,8 @@ if [ -f "$STATE_DIR/user_id.txt" ]; then
     USER_ID_FILE="$STATE_DIR/user_id.txt" \
     INFOBLOX_BASE_URL="$INFOBLOX_BASE_URL" \
         python3 delete_user.py || echo "Warning: user deletion failed"
+    echo "Waiting 60 seconds before deleting sandbox..."
+    sleep 60
 else
     echo "--- Step 1: Skipped (no user_id.txt) ---"
 fi

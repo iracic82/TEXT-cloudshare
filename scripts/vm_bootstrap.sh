@@ -72,6 +72,9 @@ INFOBLOX_BASE_URL="$INFOBLOX_BASE_URL" \
 
 echo "Sandbox created. ID: $(cat $STATE_DIR/sandbox_id.txt)"
 
+echo "Waiting 60 seconds for sandbox provisioning..."
+sleep 60
+
 # ── Step 2: Create User ────────────────────────────────────────────
 if [ -n "$USER_EMAIL" ] && [ -n "$INFOBLOX_PASSWORD" ]; then
     echo "--- Step 2: Creating User ---"
