@@ -49,9 +49,11 @@ INFOBLOX_EMAIL="${INFOBLOX_EMAIL:-}"
 INFOBLOX_PASSWORD="${INFOBLOX_PASSWORD:-}"
 USER_EMAIL="${USER_EMAIL:-}"
 
-# Use machine-id as unique participant identifier
+# Use short machine-id as unique participant identifier
 # Each CloudShare VM clone gets a unique machine-id
-PARTICIPANT_ID="${PARTICIPANT_ID:-$(cat /etc/machine-id)}"
+MACHINE_ID=$(cat /etc/machine-id)
+SHORT_ID="${MACHINE_ID:0:8}"
+PARTICIPANT_ID="${PARTICIPANT_ID:-cloudshare-${SHORT_ID}}"
 
 echo "Participant ID: $PARTICIPANT_ID"
 
