@@ -1,0 +1,24 @@
+name: Cleanup Orphaned Sandboxes
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install requests
+
+      - name: Run cleanup
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
+          INFOBLOX_TOKEN: ${{ secrets.INFOBLOX_TOKEN }}
+        run: python scripts/cleanup_orphans.py --delete --stale-minutes 15

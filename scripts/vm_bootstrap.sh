@@ -142,6 +142,16 @@ fi
 BASHRC
 fi
 
+# ── Heartbeat cron - sends "I'm alive" every 5 min to GitHub Gist ───
+chmod +x "$SCRIPTS_DIR/heartbeat.sh"
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+    # Run first heartbeat immediately
+    "$SCRIPTS_DIR/heartbeat.sh"
+    # Schedule every 5 minutes
+    (crontab -l 2>/dev/null; echo "*/5 * * * * /opt/cloudshare-lab/scripts/heartbeat.sh") | sort -u | crontab -
+    echo "Heartbeat cron installed (every 5 min)"
+fi
+
 rm -f "$LOCK_FILE"
 echo "=== Lab bootstrap completed at $(date) ==="
 echo "=== Student needs to run 'setup-my-lab' to complete setup ==="
