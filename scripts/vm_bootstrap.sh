@@ -24,6 +24,7 @@ fi
 touch "$LOCK_FILE"
 
 mkdir -p "$STATE_DIR"
+chmod 755 "$STATE_DIR"
 
 # ── Load credentials from lab.env ───────────────────────────────────
 if [ -f /opt/cloudshare-lab/lab.env ]; then
@@ -128,6 +129,18 @@ chmod +x "$SCRIPTS_DIR/create_user_wrapper.sh"
 # Allow student user to run the wrapper as root (no password)
 echo "student ALL=(root) NOPASSWD: /opt/cloudshare-lab/scripts/create_user_wrapper.sh" > /etc/sudoers.d/student-lab
 chmod 440 /etc/sudoers.d/student-lab
+
+# Auto-prompt setup-my-lab on student's first login if not yet completed
+if id student &>/dev/null; then
+    grep -q "setup-my-lab" /home/student/.bashrc 2>/dev/null || \
+    cat >> /home/student/.bashrc << 'BASHRC'
+
+# Auto-run lab setup if not yet completed
+if [ ! -f /opt/cloudshare-lab/state/user_id.txt ]; then
+    setup-my-lab
+fi
+BASHRC
+fi
 
 rm -f "$LOCK_FILE"
 echo "=== Lab bootstrap completed at $(date) ==="
