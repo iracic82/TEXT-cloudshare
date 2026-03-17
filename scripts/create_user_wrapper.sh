@@ -24,7 +24,7 @@ fi
 # Load credentials
 source /opt/cloudshare-lab/lab.env
 
-sleep 60
+sleep 20
 
 cd "$SCRIPTS_DIR"
 
