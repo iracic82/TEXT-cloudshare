@@ -7,15 +7,25 @@
 STATE_DIR="/opt/cloudshare-lab/state"
 SCRIPTS_DIR="/opt/cloudshare-lab/scripts"
 
+# Handle --reset flag
+if [ "${1:-}" = "--reset" ]; then
+    echo "  Resetting user setup..."
+    sudo rm -f "$STATE_DIR/user_id.txt" "$STATE_DIR/student_email.txt"
+fi
+
 # Check if already completed
 if [ -f "$STATE_DIR/user_id.txt" ]; then
     SANDBOX_NAME=$(cat "$STATE_DIR/sandbox_name.txt" 2>/dev/null || echo "unknown")
+    STUDENT_EMAIL=$(cat "$STATE_DIR/student_email.txt" 2>/dev/null || echo "unknown")
     echo ""
     echo "  Lab is already set up!"
     echo "  Sandbox Name: $SANDBOX_NAME"
+    echo "  Student:      $STUDENT_EMAIL"
     echo ""
     echo "  To find your sandbox in Infoblox Portal:"
     echo "  Top-left menu → Find Account → paste: $SANDBOX_NAME"
+    echo ""
+    echo "  To create a new user: setup-my-lab --reset"
     echo ""
     exit 0
 fi
