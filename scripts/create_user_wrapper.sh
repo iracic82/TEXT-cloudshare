@@ -72,6 +72,17 @@ LABEOF
         ;;
 
     reset)
+        # Delete user from Infoblox CSP if exists
+        if [ -f "$STATE_DIR/user_id.txt" ] && [ -f "$STATE_DIR/sandbox_id.txt" ]; then
+            source /opt/cloudshare-lab/lab.env
+            cd "$SCRIPTS_DIR"
+            SANDBOX_ID_FILE="$STATE_DIR/sandbox_id.txt" \
+            USER_ID_FILE="$STATE_DIR/user_id.txt" \
+            INFOBLOX_EMAIL="${INFOBLOX_EMAIL}" \
+            INFOBLOX_PASSWORD="${INFOBLOX_PASSWORD}" \
+            INFOBLOX_BASE_URL="${INFOBLOX_BASE_URL:-https://csp.infoblox.com}" \
+                python3 delete_user.py 2>/dev/null || echo "  Note: could not delete old user from CSP"
+        fi
         rm -f "$STATE_DIR/user_id.txt" "$STATE_DIR/student_email.txt"
         echo "User reset complete."
         ;;
