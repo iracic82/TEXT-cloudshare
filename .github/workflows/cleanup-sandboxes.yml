@@ -21,4 +21,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
           INFOBLOX_TOKEN: ${{ secrets.INFOBLOX_TOKEN }}
-        run: python scripts/cleanup_orphans.py --delete --stale-minutes 15
+        run: python scripts/cleanup_orphans.py --delete --stale-minutes 1440

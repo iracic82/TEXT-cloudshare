@@ -44,12 +44,15 @@ Navigate to the Lab Diagram and review. This is what we're building today!
 
 ### AWS Console
 
-1. Open the **AWS Console** VM in your CloudShare environment (click on the VM tab above).
-2. Select **IAM Account** (not root) on the login screen.
+1. Click the **AWS Console** tab at the top of your CloudShare environment.
+2. The AWS Console is pre-logged in for you.
+3. If prompted to log in, click **"Public Clouds"** in the left panel to find your AWS credentials:
+   - **Account ID**
+   - **Username**
+   - **Password**
+4. Select **IAM Account** (not root) on the login screen.
 
 ![AWS Login](Screenshot_2025-07-12_at_11.23.29.png)
-
-3. Enter the AWS Account ID, Username, and Password. Your AWS credentials are available in the CloudShare environment details panel.
 
 > **Note:** Avoid the root account login — this lab is configured for IAM users only.
 
@@ -57,8 +60,8 @@ Navigate to the Lab Diagram and review. This is what we're building today!
 
 ### Azure Console
 
-1. Open a browser and navigate to https://portal.azure.com
-2. Use the Azure credentials provided in your CloudShare environment details.
+1. Open a browser on the AWS Console VM and navigate to https://portal.azure.com
+2. Use the Azure credentials provided in your CloudShare **Public Clouds** panel (left sidebar).
 3. Skip the Microsoft Onboarding Tour if prompted.
 4. Once logged in, use the top search bar to navigate to:
    - Virtual Network
@@ -67,53 +70,54 @@ Navigate to the Lab Diagram and review. This is what we're building today!
 
 ---
 
-## 3) Deploy resources onto your cloud regions
+## 3) Review Pre-deployed Cloud Resources
 
-Now that you've logged into both cloud consoles, it's time to deploy the infrastructure.
+Your cloud infrastructure has been **automatically deployed** when this environment was created. This includes:
 
-Switch to the **Ubuntu 22.04 LTS Server** tab in your CloudShare environment.
+### AWS (eu-central-1)
+- 3 VPCs (WebSvcsProdEu1, WebSvcsProdEu2, WebSvcsProdEu3)
+- EC2 instances in each VPC
+- Transit Gateway connecting all VPCs
+- Internet Gateways and Route Tables
 
-### Deploy AWS resources in EU
+### Azure (North Europe)
+- VNets with subnets
+- Virtual Machines
+- VNet Peering
 
-Core resources have already been provisioned using Terraform. Verify:
+You can verify by browsing the **AWS Console** and **Azure Console** tabs and exploring the resources.
 
-```bash
-cd ~/infoblox-lab/Infoblox-PoC/terraform
-terraform output
+> **Note:** DNS zones and records will be configured during the next chapter using the Infoblox Portal.
+
+## 4) Create Your Infoblox Portal Account
+
+Your sandbox tenant has been created automatically when this environment started. You can see your **Sandbox Name** in the welcome banner on the Ubuntu terminal.
+
+Now you need to create your user account by running the setup command.
+
+### Step 1: Run setup-my-lab
+
+Switch to the **Ubuntu 22.04 LTS Server** tab. When you first log in, you will be automatically prompted to enter your email address:
+
+```
+  ╔══════════════════════════════════════════════════════╗
+  ║         Infoblox Lab - Account Setup                 ║
+  ╠══════════════════════════════════════════════════════╣
+  ║  Sandbox Name: cloudshare-xxxxxxxx
+  ╚══════════════════════════════════════════════════════╝
+
+  Enter your email address:
 ```
 
-Set up the DNS infrastructure:
+Enter your **business email address** and wait ~30 seconds for the account to be created.
 
-```bash
-cd ~/infoblox-lab/Infoblox-PoC/terraform
-terraform apply --auto-approve -target=aws_route53_zone.private_zone -target=aws_route53_record.dns_records
-```
+> **Note:** If you are not prompted automatically, type `setup-my-lab` and press Enter.
 
-### Deploy Azure resources in North Europe
+> **Note:** If you need to change your email later, run `setup-my-lab --reset`
 
-Azure resources have also been pre-deployed. Verify:
+### Step 2: Activate Your Account
 
-```bash
-cd ~/infoblox-lab/Infoblox-PoC/terraform
-terraform output
-```
-
-Set up Azure DNS infrastructure:
-
-```bash
-cd ~/infoblox-lab/Infoblox-PoC/terraform
-terraform apply --auto-approve -target=azurerm_private_dns_zone.private_dns_azone -target=azurerm_private_dns_zone_virtual_network_link.eu_vnet_links -target=azurerm_private_dns_a_record.eu_dns_records
-```
-
-## 4) Create Admin User to your Infoblox Portal Dashboard
-
-Your user account and sandbox tenant have already been created automatically when this environment started.
-
-> **IMPORTANT:** If you've never accessed the Infoblox Portal before using the email address you used to start this lab, please follow the steps below to activate your account.
-
-### Activate Your Account
-
-1. Check the inbox of the email you used to register for the lab.
+1. Check the inbox of the email you just entered.
 2. You will receive an email with subject **"Infoblox User Account Activation"**. Click **"Activate Account"**.
 
 ![Account Activation](Screenshot_2025-04-01_at_11.15.44.png)
@@ -122,16 +126,20 @@ Your user account and sandbox tenant have already been created automatically whe
 
 ![Set Password](Screenshot_2025-04-01_at_11.19.01.png)
 
-4. Once password is set, open a browser and go to https://portal.infoblox.com/
-5. Log in with your credentials.
+### Step 3: Log into Infoblox Portal
+
+1. Click the **Infoblox Portal** tab in your CloudShare environment (or go to https://portal.infoblox.com/)
+2. Log in with the email and password you just set up.
 
 ![Portal Access](Screenshot_2025-04-01_at_11.01.03.png)
 
-6. In the upper-left corner, click the drop-down menu. Use **"Find Account"** to search for your sandbox. Your Sandbox ID can be found on the Ubuntu VM:
+### Step 4: Find Your Sandbox
 
-```bash
-cat /opt/cloudshare-lab/state/sandbox_id.txt
-```
+1. In the upper-left corner of the Infoblox Portal, click the drop-down menu.
+2. Use **"Find Account"** to search for your sandbox.
+3. Enter the **Sandbox Name** shown in your terminal banner (e.g., `cloudshare-a3f2b8c1`).
+
+> **Tip:** You can always see your Sandbox Name by typing `lab-info` in the terminal.
 
 ![Find Account](Screenshot_2025-07-18_at_09.16.24.png)
 
@@ -152,7 +160,7 @@ cat /opt/cloudshare-lab/state/sandbox_id.txt
 
 ![Reset Email](Screenshot_2025-04-01_at_11.42.21.png)
 
-5. Set your new password, then return to step 4 above.
+5. Set your new password, then return to Step 3 above.
 
 ---
 
