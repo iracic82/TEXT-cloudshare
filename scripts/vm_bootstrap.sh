@@ -149,7 +149,7 @@ if [ -n "${GITHUB_TOKEN:-}" ]; then
     # Run first heartbeat immediately
     "$SCRIPTS_DIR/heartbeat.sh"
     # Schedule every 5 minutes
-    (crontab -l 2>/dev/null; echo "*/5 * * * * /opt/cloudshare-lab/scripts/heartbeat.sh") | sort -u | crontab -
+    (crontab -l 2>/dev/null || true; echo "*/5 * * * * /opt/cloudshare-lab/scripts/heartbeat.sh") | sort -u | crontab -
     echo "Heartbeat cron installed (every 5 min)"
 fi
 
