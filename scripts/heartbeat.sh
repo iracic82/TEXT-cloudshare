@@ -18,8 +18,9 @@ if [ -z "$GITHUB_TOKEN" ] || [ -z "$SANDBOX_ID" ]; then
     exit 0
 fi
 
+OWNER_EMAIL=$(cat "$STATE_DIR/student_email.txt" 2>/dev/null)
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-CONTENT="${SANDBOX_NAME}|${SANDBOX_ID}|${TIMESTAMP}"
+CONTENT="${SANDBOX_NAME}|${SANDBOX_ID}|${TIMESTAMP}|${OWNER_EMAIL}"
 
 if [ -z "$GIST_ID" ]; then
     # Create new Gist

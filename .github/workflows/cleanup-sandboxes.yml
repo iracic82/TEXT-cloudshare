@@ -1,8 +1,9 @@
 name: Cleanup Orphaned Sandboxes
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
+  # schedule paused — webhook handles cleanup now (lambda: cloudshare-webhook-cleanup)
+  # schedule:
+  #   - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:

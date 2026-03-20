@@ -75,6 +75,7 @@ def parse_heartbeats(github_token, gists):
                     "sandbox_name": parts[0],
                     "sandbox_id": parts[1],
                     "timestamp": parts[2],
+                    "owner_email": parts[3] if len(parts) >= 4 else "",
                     "gist_id": gist["id"],
                     "filename": filename,
                 })
@@ -165,11 +166,13 @@ def main():
 
     print(f"Alive ({len(alive)}):")
     for h in alive:
-        print(f"  {h['sandbox_name']:30s} | last seen {h['age_minutes']}min ago")
+        owner = h.get('owner_email') or '(no email)'
+        print(f"  {h['sandbox_name']:30s} | {owner:30s} | last seen {h['age_minutes']}min ago")
 
     print(f"\nStale ({len(stale)}):")
     for h in stale:
-        print(f"  {h['sandbox_name']:30s} | last seen {h['age_minutes']}min ago")
+        owner = h.get('owner_email') or '(no email)'
+        print(f"  {h['sandbox_name']:30s} | {owner:30s} | last seen {h['age_minutes']}min ago")
 
     if not stale:
         print("\nAll sandboxes alive. Nothing to clean up!")
