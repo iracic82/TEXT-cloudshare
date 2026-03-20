@@ -132,14 +132,15 @@ chmod 440 /etc/sudoers.d/student-lab
 
 # Auto-prompt setup-my-lab on student's first login if not yet completed
 if id student &>/dev/null; then
-    grep -q "setup-my-lab" /home/student/.bashrc 2>/dev/null || \
-    cat >> /home/student/.bashrc << 'BASHRC'
+    if ! grep -q "setup-my-lab" /home/student/.bashrc 2>/dev/null; then
+        cat >> /home/student/.bashrc << 'BASHRC'
 
 # Auto-run lab setup if not yet completed
 if [ ! -f /opt/cloudshare-lab/state/user_id.txt ]; then
     setup-my-lab
 fi
 BASHRC
+    fi
 fi
 
 # ── Heartbeat cron - sends "I'm alive" every 5 min to GitHub Gist ───
